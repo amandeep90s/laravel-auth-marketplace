@@ -13,24 +13,24 @@ Route::prefix('auth')->group(function () {
     // Authentication routes for admin
     Route::prefix('admin')->group(function () {
         Route::post('login', [AdminController::class, 'login']);
-
-        Route::middleware([AdminRedisTokenAuth::class])->group(function () {
+        // Auth sanctum middleware is required authorization header with token
+        Route::middleware(['auth:sanctum', AdminRedisTokenAuth::class])->group(function () {
             Route::post('logout', [AdminController::class, 'logout']);
         });
     });
     // Authentication routes for provider
     Route::prefix('provider')->group(function () {
         Route::post('login', [ProviderController::class, 'login']);
-
-        Route::middleware([ProviderRedisTokenAuth::class])->group(function () {
+        // Auth sanctum middleware is required authorization header with token
+        Route::middleware(['auth:sanctum', ProviderRedisTokenAuth::class])->group(function () {
             Route::post('logout', [ProviderController::class, 'logout']);
         });
     });
     // Authentication routes for user
     Route::prefix('user')->group(function () {
         Route::post('login', [UserController::class, 'login']);
-
-        Route::middleware([UserRedisTokenAuth::class])->group(function () {
+        // Auth sanctum middleware is required authorization header with token
+        Route::middleware(['auth:sanctum', UserRedisTokenAuth::class])->group(function () {
             Route::post('logout', [UserController::class, 'logout']);
         });
     });
