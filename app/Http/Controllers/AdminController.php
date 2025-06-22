@@ -23,10 +23,10 @@ class AdminController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $token = $admin->createToken('admin-token', ['*'], now()->addHours(2))->plainTextToken;
+        $token = $admin->createToken('admin-token', ['*'], now()->addMinutes(2))->plainTextToken;
 
         // Cache the token in Redis
-        Cache::put("admin:token:{$admin->id}", $token, now()->addHours(2));
+        Cache::put("admin:token:{$admin->id}", $token, now()->addMinutes(2));
 
         // Set secure=true only for production
         $secure = App::environment('production');
@@ -35,7 +35,7 @@ class AdminController extends Controller
         $cookie = cookie(
             'admin_auth_token',// Cookie name
             $token,           // Value
-            120,            // Expiration in minutes
+            2,            // Expiration in minutes
             '/',               // Path
             null,            // Domain (null = current)
             $secure,         // Secure (only HTTPS in prod)
@@ -72,7 +72,7 @@ class AdminController extends Controller
         Cache::forget("admin:token:{$admin->id}");
 
         // Revoke the Sanctum token
-        $accessToken->delete();
+        $request->user()->tokens()->delete();
 
         // Remove the HTTP-only cookie
         return response()->json(['message' => 'Logged out successfully'])

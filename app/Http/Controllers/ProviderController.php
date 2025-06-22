@@ -70,7 +70,7 @@ class ProviderController extends Controller
         Cache::forget("provider:token:{$provider->id}");
 
         // Revoke the Sanctum token
-        $accessToken->delete();
+        $request->user()->tokens()->delete();
 
         // Remove the HTTP-only cookie
         return response()->json(['message' => 'Logged out successfully'])

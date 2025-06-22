@@ -70,7 +70,7 @@ class UserController extends Controller
         Cache::forget("user:token:{$user->id}");
 
         // Revoke the Sanctum token
-        $accessToken->delete();
+        $request->user()->tokens()->delete();
 
         // Remove the HTTP-only cookie
         return response()->json(['message' => 'Logged out successfully'])
