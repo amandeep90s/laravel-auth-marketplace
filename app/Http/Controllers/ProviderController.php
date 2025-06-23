@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class ProviderController extends Controller
@@ -18,8 +19,16 @@ class ProviderController extends Controller
 
         $provider = Provider::where('email', $request->email)->first();
 
-        if (!$provider || !Hash::check($request->password, $provider->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+        if (!$provider) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        if (!Hash::check($request->password, (string) $provider->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
         }
 
         $token = $provider->createToken('provider-token', ['*'], now()->addHours(2))->plainTextToken;
